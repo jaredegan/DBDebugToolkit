@@ -236,4 +236,13 @@ typedef NS_ENUM(NSUInteger, DBRequestModelBodySynchronizationStatus) {
  */
 @property (nonatomic, readonly) NSString *localizedErrorDescription;
 
+///-----------------------
+/// @name Export
+///-----------------------
+
+/**
+ A `NSDictionary` instange describing this object.
+ */
+@property (nonatomic, readonly) NSDictionary *asDictionary;
+
 @end

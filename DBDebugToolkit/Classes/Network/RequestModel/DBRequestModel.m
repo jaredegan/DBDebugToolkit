@@ -232,4 +232,111 @@ static const NSInteger DBRequestModelBodyStreamBufferSize = 4096;
     [self.delegate requestModelDidFinishSynchronization:self];
 }
 
+#pragma mark - Export
+- (NSDictionary *)asDictionary {
+    NSMutableDictionary *result = [@{} mutableCopy];
+
+    result[@"url"] = self.url.absoluteString;
+    NSString *cachePoliyString = @"";
+    switch (self.cachePolicy) {
+            case NSURLRequestUseProtocolCachePolicy:
+            cachePoliyString = @"NSURLRequestUseProtocolCachePolicy";
+            break;
+
+            case NSURLRequestReloadIgnoringLocalCacheData:
+            cachePoliyString = @"NSURLRequestReloadIgnoringLocalCacheData";
+            break;
+
+            case NSURLRequestReturnCacheDataElseLoad:
+            cachePoliyString = @"NSURLRequestReturnCacheDataElseLoad";
+            break;
+
+            case NSURLRequestReturnCacheDataDontLoad:
+            cachePoliyString = @"NSURLRequestReturnCacheDataDontLoad";
+            break;
+
+            case NSURLRequestReloadRevalidatingCacheData:
+            cachePoliyString = @"NSURLRequestReloadRevalidatingCacheData";
+            break;
+    }
+    result[@"cache_policy"] = cachePoliyString;
+
+    result[@"timeout_interval"] = [[NSNumber numberWithDouble: self.timeoutInterval] stringValue];
+    result[@"sending_date"] = [[NSNumber numberWithDouble: self.sendingDate.timeIntervalSince1970] stringValue];
+    result[@"receiving_date"] = [[NSNumber numberWithDouble: self.receivingDate.timeIntervalSince1970] stringValue];
+    result[@"http_method"] = self.httpMethod;
+    result[@"http_headers"] = self.allRequestHTTPHeaderFields;
+    result[@"request_body_length"] = [[NSNumber numberWithInt:self.requestBodyLength] stringValue];
+
+    NSString *requestBodyType = @"";
+    switch(self.requestBodyType) {
+            case DBRequestModelBodyTypeJSON:
+            requestBodyType = @"JSON";
+            break;
+            case DBRequestModelBodyTypeImage:
+            requestBodyType = @"image";
+            break;
+            case DBRequestModelBodyTypeOther:
+            requestBodyType = @"other";
+            break;
+    }
+    result[@"request_body_type"] = requestBodyType;
+
+    NSString *requestBodySynchronizationStatusString = @"";
+    switch(self.requestBodySynchronizationStatus) {
+            case DBRequestModelBodySynchronizationStatusNotStarted:
+            requestBodySynchronizationStatusString = @"NotStarted";
+            break;
+            case DBRequestModelBodySynchronizationStatusStarted:
+            requestBodySynchronizationStatusString = @"Started";
+            break;
+            case DBRequestModelBodySynchronizationStatusFinished:
+            requestBodySynchronizationStatusString = @"Finished";
+            break;
+    }
+    result[@"request_body_synchronization_status"] = requestBodyType;
+    result[@"finished"] = self.finished ? @"true" : @"false";
+    result[@"MIMEType"] = self.MIMEType;
+    result[@"text_encoding_name"] = self.textEncodingName;
+    result[@"duration"] = [[NSNumber numberWithDouble:self.duration] stringValue];
+    result[@"status_code"] = [self.statusCode stringValue];
+    result[@"localized_status_code"] = self.localizedStatusCodeString;
+    result[@"response_http_headers"] = self.allResponseHTTPHeaderFields;
+    result[@"response_body_length"] = [[NSNumber numberWithLong:self.responseBodyLength] stringValue];
+
+    NSString *responseBodyTypeString = @"";
+    switch(self.responseBodyType) {
+            case DBRequestModelBodyTypeJSON:
+            responseBodyTypeString = @"JSON";
+            break;
+            case DBRequestModelBodyTypeImage:
+            responseBodyTypeString = @"image";
+            break;
+            case DBRequestModelBodyTypeOther:
+            responseBodyTypeString = @"other";
+            break;
+    }
+    result[@"response_body_type"] = responseBodyTypeString;
+
+    NSString *responseBodySynchronizationStatusString = @"";
+    switch(self.responseBodySynchronizationStatus) {
+            case DBRequestModelBodySynchronizationStatusNotStarted:
+            responseBodySynchronizationStatusString = @"NotStarted";
+            break;
+            case DBRequestModelBodySynchronizationStatusStarted:
+            responseBodySynchronizationStatusString = @"Started";
+            break;
+            case DBRequestModelBodySynchronizationStatusFinished:
+            responseBodySynchronizationStatusString = @"Finished";
+            break;
+    }
+    result[@"response_body_synchronization_status"] = responseBodySynchronizationStatusString;
+
+    result[@"did_finish_with_error"] = self.didFinishWithError ? @"true" : @"false";
+    result[@"error_code"] = [[NSNumber numberWithLong:self.errorCode] stringValue];
+    result[@"localized_error"] = self.localizedErrorDescription;
+
+    return result;
+}
+
 @end
