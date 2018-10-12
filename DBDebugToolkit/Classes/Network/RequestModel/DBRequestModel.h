@@ -50,7 +50,7 @@ typedef NS_ENUM(NSUInteger, DBRequestModelBodySynchronizationStatus) {
 
 /**
  Informs the delegate that the synchronization of the request or response body data has finished.
- 
+
  @param requestModel The `DBRequestModel` instance that finished the data synchronization.
  */
 - (void)requestModelDidFinishSynchronization:(DBRequestModel *)requestModel;
@@ -64,21 +64,21 @@ typedef NS_ENUM(NSUInteger, DBRequestModelBodySynchronizationStatus) {
 
 /**
  Creates and returns a new instance for the given request.
- 
+
  @param request The `NSURLRequest` instance.
  */
 + (instancetype)requestModelWithRequest:(NSURLRequest *)request;
 
 /**
  Saves the outcome of the request.
- 
+
  @param requestOutcome The `DBRequestOutcome` instance wrapping the response and data or the error received.
  */
 - (void)saveOutcome:(DBRequestOutcome *)requestOutcome;
 
 /**
  Saves the body of the request, contained either in an `NSData` instance or in `NSInputStream` instance.
- 
+
  @param body The `NSData` instance containing the body. If empty, the body is contained in the input stream.
  @param bodyStream The `NSInputStream` instance containing the body in case of empty `NSData` instance.
  */
@@ -140,7 +140,7 @@ typedef NS_ENUM(NSUInteger, DBRequestModelBodySynchronizationStatus) {
 
 /**
  Reads the saved request body data.
- 
+
  @param completion The block that will be called with the read data.
  */
 - (void)readRequestBodyWithCompletion:(void(^)(NSData *))completion;
@@ -173,6 +173,11 @@ typedef NS_ENUM(NSUInteger, DBRequestModelBodySynchronizationStatus) {
  Request duration. Read-only.
  */
 @property (nonatomic, readonly) NSTimeInterval duration;
+
+/**
+ Time since app start when this request was sent
+ */
+@property (nonatomic, readonly) NSTimeInterval sinceStart;
 
 /**
  HTTP status code of the response. Is `nil` if the request used a different protocol. Read-only.
@@ -212,7 +217,7 @@ typedef NS_ENUM(NSUInteger, DBRequestModelBodySynchronizationStatus) {
 
 /**
  Reads the saved response body data.
- 
+
  @param completion The block that will be called with the read data.
  */
 - (void)readResponseBodyWithCompletion:(void(^)(NSData *))completion;

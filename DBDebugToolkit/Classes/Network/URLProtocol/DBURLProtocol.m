@@ -44,11 +44,16 @@ static NSString *const DBURLProtocolHandledKey = @"DBURLProtocolHandled";
     if (![DBNetworkToolkit sharedInstance].loggingEnabled) {
         return NO;
     }
-    
+
+    if ([[request valueForHTTPHeaderField:@"accept"] isEqualToString:@"text/event-stream"]) {
+        return NO;
+    }
+
+
     if ([[self propertyForKey:DBURLProtocolHandledKey inRequest:request] boolValue]) {
         return NO;
     }
-    
+
     return YES;
 }
 
@@ -59,9 +64,9 @@ static NSString *const DBURLProtocolHandledKey = @"DBURLProtocolHandled";
 - (void)startLoading {
     [[DBNetworkToolkit sharedInstance] saveRequest:self.request];
     NSMutableURLRequest *request = [[DBURLProtocol canonicalRequestForRequest:self.request] mutableCopy];
-    
+
     [DBURLProtocol setProperty:@YES forKey:DBURLProtocolHandledKey inRequest:request];
-    
+
     if (!self.urlSession) {
         if ([[[UIDevice currentDevice] systemVersion] compare:@"10.0" options:NSNumericSearch] != NSOrderedAscending) {
             self.urlSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
@@ -71,24 +76,24 @@ static NSString *const DBURLProtocolHandledKey = @"DBURLProtocolHandled";
             self.urlSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
         }
     }
-    
+
     [[self.urlSession dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        
+
         if (error != nil) {
             [self finishWithOutcome:[DBRequestOutcome outcomeWithError:error]];
             [self.client URLProtocol:self didFailWithError:error];
         } else {
             [self finishWithOutcome:[DBRequestOutcome outcomeWithResponse:response data:data]];
         }
-        
+
         if (response != nil) {
             [self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
         }
-        
+
         if (data != nil) {
             [self.client URLProtocol:self didLoadData:data];
         }
-        
+
         [self.client URLProtocolDidFinishLoading:self];
     }] resume];
 }
@@ -101,7 +106,7 @@ static NSString *const DBURLProtocolHandledKey = @"DBURLProtocolHandled";
     [[DBNetworkToolkit sharedInstance] saveRequestOutcome:requestOutcome forRequest:self.request];
 }
 
-#pragma mark - NSURLSessionDelegate 
+#pragma mark - NSURLSessionDelegate
 
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
     DBAuthenticationChallengeSender *challengeSender = [DBAuthenticationChallengeSender authenticationChallengeSenderWithSessionCompletionHandler:completionHandler];
