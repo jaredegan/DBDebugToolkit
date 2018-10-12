@@ -24,6 +24,7 @@
 #import "DBRequestDataHandler.h"
 
 static const NSInteger DBRequestModelBodyStreamBufferSize = 4096;
+static NSDate *appStartDate;
 
 @interface DBRequestModel () <DBRequestDataHandlerDelegate>
 
@@ -47,6 +48,10 @@ static const NSInteger DBRequestModelBodyStreamBufferSize = 4096;
 
 #pragma mark - Initialization
 
++ (void)load {
+    appStartDate = [NSDate date];
+}
+
 - (instancetype)initWithRequest:(NSURLRequest *)request {
     self = [super init];
     if (self) {
@@ -56,8 +61,9 @@ static const NSInteger DBRequestModelBodyStreamBufferSize = 4096;
         _httpMethod = request.HTTPMethod;
         _allRequestHTTPHeaderFields = request.allHTTPHeaderFields;
         _sendingDate = [NSDate date];
+        _sinceStart = [_sendingDate timeIntervalSinceDate:appStartDate];
     }
-    
+
     return self;
 }
 
@@ -72,7 +78,7 @@ static const NSInteger DBRequestModelBodyStreamBufferSize = 4096;
     if ([bodyData length] == 0) {
         bodyData = [self dataFromInputStream:bodyStream];
     }
-    
+
     [self saveRequestBody:bodyData];
 }
 
@@ -152,7 +158,7 @@ static const NSInteger DBRequestModelBodyStreamBufferSize = 4096;
     [self.responseDataHandler readWithCompletion:completion];
 }
 
-#pragma mark - Request properties 
+#pragma mark - Request properties
 
 - (NSInteger)requestBodyLength {
     return self.requestDataHandler.dataLength;

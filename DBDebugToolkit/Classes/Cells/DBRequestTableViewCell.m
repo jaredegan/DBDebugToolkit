@@ -88,7 +88,7 @@
     } else if (requestModel.didFinishWithError) {
         self.responseDetailsLabel.text = [NSString stringWithFormat:@"Error %ld: %@", (long)requestModel.errorCode, requestModel.localizedErrorDescription];
     } else {
-        NSMutableString *responseString = [NSMutableString stringWithFormat:@"%.2lfs", requestModel.duration];
+        NSMutableString *responseString = [NSMutableString stringWithFormat:@"%.3fs for %.3fs", requestModel.sinceStart, requestModel.duration];
         if (requestModel.statusCode) {
             [responseString appendFormat:@", HTTP %@", requestModel.statusCode];
             if (requestModel.localizedStatusCodeString) {
